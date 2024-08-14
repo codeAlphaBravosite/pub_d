@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Publish Date Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background-color: #f0f0f0;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #FF0000;
+        }
+        #checkButton {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #FF0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        #checkButton:hover {
+            background-color: #CC0000;
+        }
+        #checkButton:active {
+            transform: scale(0.98);
+        }
+        #result {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: opacity 0.3s ease;
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+            input[type="text"], #checkButton {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Check YouTube Publish Date</h1>
+        <input type="text" id="apiKeyInput" placeholder="Enter YouTube API Key">
+        <input type="text" id="urlInput" placeholder="Enter YouTube video URL">
+        <button id="checkButton">Check Publish Date</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('checkButton').addEventListener('click', checkPublishDate);
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPublishDate();
+            }
+        });
+
+        function checkPublishDate() {
+            const url = document.getElementById('urlInput').value;
+            const apiKey = document.getElementById('apiKeyInput').value;
+            const videoId = extractVideoId(url);
+            
+            if (!videoId) {
+                showResult('Invalid YouTube URL');
+                return;
+            }
+
+            if (!apiKey) {
+                showResult('Please enter a valid API Key');
+                return;
+            }
+
+            showResult('Loading...');
+
+            fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.items && data.items.length > 0) {
+                        const publishedAt = data.items[0].snippet.publishedAt;
+                        const kolkataTime = moment(publishedAt).tz('Asia/Kolkata').format('MMMM D, YYYY, h:mm:ss A');
+                        showResult(`<strong>Published On</strong><br>${kolkataTime}`);
+                    } else {
+                        showResult('Video not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showResult('An error occurred while fetching the data. Please check your API key and try again.');
+                })
+                .finally(() => {
+                    document.getElementById('urlInput').value = '';
+                    document.getElementById('urlInput').focus();
+                });
+        }
+
+        function extractVideoId(url) {
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(shorts\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[8].length == 11) ? match[8] : false;
+        }
+
+        function showResult(message) {
+            const resultElement = document.getElementById('result');
+            resultElement.style.opacity = '0';
+            resultElement.style.display = 'block';
+            resultElement.innerHTML = message;
+            setTimeout(() => {
+                resultElement.style.opacity = '1';
+            }, 10);
+        }
+    </script>
+</body>
+</html>
