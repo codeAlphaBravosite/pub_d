@@ -6,307 +6,187 @@
     <link rel="icon" href="icon-192x192.png" type="image/png">
     <link rel="shortcut icon" href="icon-192x192.png" type="image/png">
     <link rel="apple-touch-icon" href="icon-192x192.png">
-    <title>YouTube Publish Date Checker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>YouTube Video Publish Date Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
     <style>
-        :root {
-            --primary: #FF0000;
-            --primary-hover: #CC0000;
-            --success: #10B981;
-            --success-hover: #059669;
-            --background: #FFFFFF;
-            --foreground: #111827;
-            --muted: #6B7280;
-            --border: #E5E7EB;
-            --radius: 0.75rem;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', Arial, sans-serif;
             line-height: 1.6;
-            color: var(--foreground);
-            background-color: #F3F4F6;
-            min-height: 100vh;
+            color: #333;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 1.5rem;
+            min-height: 70vh;
+            padding: 20px;
         }
-
         .container {
-            max-width: 32rem;
+            max-width: 500px;
             width: 100%;
-            background-color: var(--background);
-            padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            background-color: #f0f0f0;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
         }
-
         h1 {
-            color: var(--foreground);
+            color: #333333;
             text-align: center;
-            margin-bottom: 2rem;
-            font-weight: 600;
-            font-size: 1.5rem;
+            margin-bottom: 30px;
+            font-size: 28px;
         }
-
-        .input-wrapper {
-            position: relative;
-            margin-bottom: 1rem;
-        }
-
-        input {
+        input[type="text"] {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            font-size: 0.875rem;
-            transition: all 0.2s;
-            background-color: var(--background);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
         }
-
-        input:focus {
+        input[type="text"]:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+            border-color: #FF0000;
         }
-
-        .api-input-wrapper {
-            position: relative;
-        }
-
-        .toggle-visibility {
-            position: absolute;
-            right: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.25rem;
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .toggle-visibility:hover {
-            color: var(--foreground);
-        }
-
-        button {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: none;
-            border-radius: var(--radius);
-            font-weight: 500;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
         #checkButton {
-            background-color: var(--primary);
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #FF0000;
             color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-size: 16px;
+            font-weight: bold;
         }
-
         #checkButton:hover {
-            background-color: var(--primary-hover);
+            background-color: #CC0000;
         }
-
-        .save-api-btn {
-            background-color: var(--success);
-            color: white;
-            margin-top: 0.75rem;
+        #checkButton:active {
+            transform: scale(0.98);
         }
-
-        .save-api-btn:hover {
-            background-color: var(--success-hover);
-        }
-
         #result {
             display: none;
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: #F9FAFB;
-            border-radius: var(--radius);
-            font-size: 0.875rem;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: opacity 0.3s ease;
         }
-
         .api-section {
-            margin-top: 2rem;
-            border-top: 1px solid var(--border);
-            padding-top: 1.5rem;
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
         }
-
         .api-toggle {
             background: none;
             border: none;
-            color: var(--muted);
+            color: #666;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             width: 100%;
-            padding: 0.5rem 0;
-            font-size: 0.875rem;
-            font-weight: 500;
+            padding: 10px 0;
+            font-size: 14px;
         }
-
         .api-toggle:hover {
-            color: var(--foreground);
+            color: #FF0000;
         }
-
-        .api-toggle-left {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .api-toggle .arrow {
+            margin-left: 8px;
+            transition: transform 0.3s ease;
         }
-
+        .api-toggle .arrow.up {
+            transform: rotate(180deg);
+        }
         .api-content {
             max-height: 0;
             overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: max-height 0.3s ease;
         }
-
         .api-content.expanded {
             max-height: 200px;
-            margin-top: 1rem;
         }
-
         .api-status {
-            font-size: 0.75rem;
-            color: var(--muted);
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
         }
-
-        .save-success {
-            color: var(--success);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        @media (max-width: 640px) {
-            .container {
-                padding: 1.5rem;
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+            input[type="text"], #checkButton {
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>YouTube Publish Date</h1>
-        <div class="input-wrapper">
-            <input type="text" id="urlInput" placeholder="Enter YouTube video URL">
-        </div>
-        <button id="checkButton">
-            <i data-lucide="calendar"></i>
-            Check Publish Date
-        </button>
+        <h1>Check YouTube Publish Date</h1>
+        <input type="text" id="urlInput" placeholder="Enter YouTube video URL">
+        <button id="checkButton">Check Publish Date</button>
         <div id="result"></div>
         
         <div class="api-section">
             <button class="api-toggle">
-                <div class="api-toggle-left">
-                    <i data-lucide="key"></i>
-                    API Settings
-                </div>
-                <div class="api-toggle-right">
-                    <span class="api-status"></span>
-                    <i data-lucide="chevron-down" class="arrow"></i>
-                </div>
+                Settings
+                <span class="arrow">▼</span>
+                <span class="api-status"></span>
             </button>
             <div class="api-content">
-                <div class="api-input-wrapper">
-                    <input type="password" id="apiKeyInput" placeholder="Enter API Key">
-                    <button class="toggle-visibility" title="Toggle visibility">
-                        <i data-lucide="eye" class="visibility-icon"></i>
-                    </button>
-                </div>
-                <button class="save-api-btn">
-                    <i data-lucide="save"></i>
-                    Save API Key
-                </button>
-                <div class="save-success"></div>
+                <input type="text" id="apiKeyInput" placeholder="Enter Key">
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-
         // Initialize API key handling
         const apiToggle = document.querySelector('.api-toggle');
         const apiContent = document.querySelector('.api-content');
         const apiStatus = document.querySelector('.api-status');
+        const apiArrow = document.querySelector('.arrow');
         const apiKeyInput = document.getElementById('apiKeyInput');
-        const toggleVisibility = document.querySelector('.toggle-visibility');
-        const visibilityIcon = document.querySelector('.visibility-icon');
-        const saveApiBtn = document.querySelector('.save-api-btn');
-        const saveSuccess = document.querySelector('.save-success');
-        const arrow = document.querySelector('.arrow');
 
         // Load API key from localStorage
         let apiKey = localStorage.getItem('youtubeApiKey');
         if (apiKey) {
             apiKeyInput.value = apiKey;
-            apiStatus.textContent = '(Saved)';
+            apiStatus.textContent = '(API Key saved)';
             apiContent.classList.remove('expanded');
         } else {
             apiContent.classList.add('expanded');
-            arrow.style.transform = 'rotate(180deg)';
-            apiStatus.textContent = '(Not set)';
+            apiArrow.classList.add('up');
+            apiStatus.textContent = '(No API Key saved)';
         }
 
         // Toggle API section
         apiToggle.addEventListener('click', () => {
             apiContent.classList.toggle('expanded');
-            arrow.style.transform = apiContent.classList.contains('expanded') 
-                ? 'rotate(180deg)' 
-                : 'rotate(0deg)';
+            apiArrow.classList.toggle('up');
         });
 
-        // Toggle API key visibility
-        toggleVisibility.addEventListener('click', () => {
-            const type = apiKeyInput.type === 'password' ? 'text' : 'password';
-            apiKeyInput.type = type;
-            visibilityIcon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
-            lucide.createIcons();
-        });
-
-        // Save API key
-        saveApiBtn.addEventListener('click', () => {
+        // Save API key when entered
+        apiKeyInput.addEventListener('change', () => {
             const newKey = apiKeyInput.value.trim();
             if (newKey) {
                 localStorage.setItem('youtubeApiKey', newKey);
-                apiStatus.textContent = '(Saved)';
-                
-                // Show success message
-                saveSuccess.textContent = '✓ API Key saved successfully';
-                saveSuccess.style.opacity = '1';
-                setTimeout(() => {
-                    saveSuccess.style.opacity = '0';
-                }, 2000);
+                apiStatus.textContent = '';
             } else {
                 localStorage.removeItem('youtubeApiKey');
-                apiStatus.textContent = '(Not set)';
+                apiStatus.textContent = '';
             }
         });
 
@@ -331,7 +211,7 @@
             if (!apiKey) {
                 showResult('Please enter a valid API Key');
                 apiContent.classList.add('expanded');
-                arrow.style.transform = 'rotate(180deg)';
+                apiArrow.classList.add('up');
                 return;
             }
 
@@ -352,7 +232,7 @@
                     console.error('Error:', error);
                     showResult('An error occurred while fetching the data. Please check your API key and try again.');
                     apiContent.classList.add('expanded');
-                    arrow.style.transform = 'rotate(180deg)';
+                    apiArrow.classList.add('up');
                 })
                 .finally(() => {
                     document.getElementById('urlInput').value = '';
