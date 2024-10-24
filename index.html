@@ -164,12 +164,12 @@
         let apiKey = localStorage.getItem('youtubeApiKey');
         if (apiKey) {
             apiKeyInput.value = apiKey;
-            apiStatus.textContent = '(API Key saved)';
+            apiStatus.textContent = '';
             apiContent.classList.remove('expanded');
         } else {
             apiContent.classList.add('expanded');
             apiArrow.classList.add('up');
-            apiStatus.textContent = '(No API Key saved)';
+            apiStatus.textContent = '';
         }
 
         // Toggle API section
