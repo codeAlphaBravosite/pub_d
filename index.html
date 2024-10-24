@@ -6,199 +6,237 @@
     <link rel="icon" href="icon-192x192.png" type="image/png">
     <link rel="shortcut icon" href="icon-192x192.png" type="image/png">
     <link rel="apple-touch-icon" href="icon-192x192.png">
-    <title>YouTube Video Publish Date Checker</title>
+    <title>YouTube Publish Date Checker</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.294.0/lucide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
     <style>
+        :root {
+            --primary: #FF0000;
+            --primary-hover: #CC0000;
+            --success: #10B981;
+            --success-hover: #059669;
+            --background: #FFFFFF;
+            --foreground: #111827;
+            --muted: #6B7280;
+            --border: #E5E7EB;
+            --radius: 0.75rem;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #f6f7f9 0%, #eef1f5 100%);
+            color: var(--foreground);
+            background-color: #F3F4F6;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 1.5rem;
         }
+
         .container {
-            max-width: 500px;
+            max-width: 32rem;
             width: 100%;
-            background-color: white;
-            padding: 32px;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            background-color: var(--background);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
         }
+
         h1 {
-            color: #1a1a1a;
+            color: var(--foreground);
             text-align: center;
-            margin-bottom: 32px;
-            font-size: 24px;
+            margin-bottom: 2rem;
             font-weight: 600;
+            font-size: 1.5rem;
         }
-        .input-group {
+
+        .input-wrapper {
             position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
         }
-        .input-group input {
+
+        input {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.2s ease;
-            background-color: #f9fafb;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background-color: var(--background);
         }
-        .input-group input:focus {
+
+        input:focus {
             outline: none;
-            border-color: #ff0000;
-            background-color: white;
-            box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
         }
-        .input-icon {
+
+        .api-input-wrapper {
+            position: relative;
+        }
+
+        .toggle-visibility {
             position: absolute;
-            right: 16px;
+            right: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #6b7280;
-        }
-        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            color: var(--muted);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+        }
+
+        .toggle-visibility:hover {
+            color: var(--foreground);
+        }
+
+        button {
             width: 100%;
-            padding: 12px;
+            padding: 0.75rem 1rem;
             border: none;
-            border-radius: 12px;
-            font-size: 15px;
+            border-radius: var(--radius);
             font-weight: 500;
+            font-size: 0.875rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
+
         #checkButton {
-            background-color: #ff0000;
+            background-color: var(--primary);
             color: white;
         }
+
         #checkButton:hover {
-            background-color: #e50000;
+            background-color: var(--primary-hover);
         }
+
         .save-api-btn {
-            background-color: #22c55e;
+            background-color: var(--success);
             color: white;
-            margin-top: 12px;
+            margin-top: 0.75rem;
         }
+
         .save-api-btn:hover {
-            background-color: #16a34a;
+            background-color: var(--success-hover);
         }
+
         #result {
             display: none;
-            margin-top: 24px;
-            padding: 16px;
-            background-color: #f9fafb;
-            border-radius: 12px;
-            font-size: 15px;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #F9FAFB;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
         }
+
         .api-section {
-            margin-top: 32px;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 24px;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
         }
+
         .api-toggle {
             background: none;
             border: none;
-            color: #4b5563;
+            color: var(--muted);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            padding: 8px 0;
-            font-size: 14px;
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
             font-weight: 500;
         }
+
         .api-toggle:hover {
-            color: #ff0000;
+            color: var(--foreground);
         }
+
+        .api-toggle-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         .api-content {
             max-height: 0;
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .api-content.expanded {
             max-height: 200px;
-            margin-top: 16px;
+            margin-top: 1rem;
         }
+
         .api-status {
-            font-size: 13px;
-            color: #6b7280;
-            margin-left: 8px;
+            font-size: 0.75rem;
+            color: var(--muted);
         }
-        .toggle-visibility {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            color: #6b7280;
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        .toggle-visibility:hover {
-            color: #ff0000;
-        }
+
         .save-success {
-            color: #16a34a;
-            font-size: 14px;
-            margin-top: 8px;
+            color: var(--success);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
             text-align: center;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        @media (max-width: 480px) {
+
+        @media (max-width: 640px) {
             .container {
-                padding: 24px;
-            }
-            h1 {
-                font-size: 20px;
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>YouTube Publish Date Checker</h1>
-        <div class="input-group">
+        <h1>YouTube Publish Date</h1>
+        <div class="input-wrapper">
             <input type="text" id="urlInput" placeholder="Enter YouTube video URL">
-            <i class="input-icon" data-lucide="link"></i>
         </div>
         <button id="checkButton">
-            <i data-lucide="search"></i>
+            <i data-lucide="calendar"></i>
             Check Publish Date
         </button>
         <div id="result"></div>
         
         <div class="api-section">
             <button class="api-toggle">
-                <span>API Key Settings</span>
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="api-toggle-left">
+                    <i data-lucide="key"></i>
+                    API Settings
+                </div>
+                <div class="api-toggle-right">
                     <span class="api-status"></span>
                     <i data-lucide="chevron-down" class="arrow"></i>
                 </div>
             </button>
             <div class="api-content">
-                <div class="input-group">
+                <div class="api-input-wrapper">
                     <input type="password" id="apiKeyInput" placeholder="Enter API Key">
                     <button class="toggle-visibility" title="Toggle visibility">
-                        <i data-lucide="eye"></i>
+                        <i data-lucide="eye" class="visibility-icon"></i>
                     </button>
                 </div>
                 <button class="save-api-btn">
@@ -214,39 +252,42 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // Initialize variables
+        // Initialize API key handling
         const apiToggle = document.querySelector('.api-toggle');
         const apiContent = document.querySelector('.api-content');
         const apiStatus = document.querySelector('.api-status');
-        const apiArrow = document.querySelector('.arrow');
         const apiKeyInput = document.getElementById('apiKeyInput');
         const toggleVisibility = document.querySelector('.toggle-visibility');
+        const visibilityIcon = document.querySelector('.visibility-icon');
         const saveApiBtn = document.querySelector('.save-api-btn');
         const saveSuccess = document.querySelector('.save-success');
+        const arrow = document.querySelector('.arrow');
 
         // Load API key from localStorage
         let apiKey = localStorage.getItem('youtubeApiKey');
         if (apiKey) {
             apiKeyInput.value = apiKey;
-            apiStatus.textContent = 'API Key saved';
+            apiStatus.textContent = '(Saved)';
             apiContent.classList.remove('expanded');
         } else {
             apiContent.classList.add('expanded');
-            apiArrow.classList.add('up');
-            apiStatus.textContent = 'No API Key';
+            arrow.style.transform = 'rotate(180deg)';
+            apiStatus.textContent = '(Not set)';
         }
 
         // Toggle API section
         apiToggle.addEventListener('click', () => {
             apiContent.classList.toggle('expanded');
-            apiArrow.style.transform = apiContent.classList.contains('expanded') ? 'rotate(180deg)' : 'rotate(0)';
+            arrow.style.transform = apiContent.classList.contains('expanded') 
+                ? 'rotate(180deg)' 
+                : 'rotate(0deg)';
         });
 
         // Toggle API key visibility
         toggleVisibility.addEventListener('click', () => {
             const type = apiKeyInput.type === 'password' ? 'text' : 'password';
             apiKeyInput.type = type;
-            toggleVisibility.innerHTML = `<i data-lucide="${type === 'password' ? 'eye' : 'eye-off'}"></i>`;
+            visibilityIcon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
             lucide.createIcons();
         });
 
@@ -255,7 +296,7 @@
             const newKey = apiKeyInput.value.trim();
             if (newKey) {
                 localStorage.setItem('youtubeApiKey', newKey);
-                apiStatus.textContent = 'API Key saved';
+                apiStatus.textContent = '(Saved)';
                 
                 // Show success message
                 saveSuccess.textContent = '✓ API Key saved successfully';
@@ -265,7 +306,7 @@
                 }, 2000);
             } else {
                 localStorage.removeItem('youtubeApiKey');
-                apiStatus.textContent = 'No API Key';
+                apiStatus.textContent = '(Not set)';
             }
         });
 
@@ -290,7 +331,7 @@
             if (!apiKey) {
                 showResult('Please enter a valid API Key');
                 apiContent.classList.add('expanded');
-                apiArrow.style.transform = 'rotate(180deg)';
+                arrow.style.transform = 'rotate(180deg)';
                 return;
             }
 
@@ -311,7 +352,7 @@
                     console.error('Error:', error);
                     showResult('An error occurred while fetching the data. Please check your API key and try again.');
                     apiContent.classList.add('expanded');
-                    apiArrow.style.transform = 'rotate(180deg)';
+                    arrow.style.transform = 'rotate(180deg)';
                 })
                 .finally(() => {
                     document.getElementById('urlInput').value = '';
