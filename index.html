@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="icon-192x192.png" type="image/png">
-<link rel="shortcut icon" href="icon-192x192.png" type="image/png">
-<link rel="apple-touch-icon" href="icon-192x192.png">
+    <link rel="shortcut icon" href="icon-192x192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
     <title>YouTube Video Publish Date Checker</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -34,6 +34,7 @@
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
         }
         h1 {
             color: #333333;
@@ -83,6 +84,45 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: opacity 0.3s ease;
         }
+        .api-section {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        .api-toggle {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+        .api-toggle:hover {
+            color: #FF0000;
+        }
+        .api-toggle .arrow {
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+        .api-toggle .arrow.up {
+            transform: rotate(180deg);
+        }
+        .api-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .api-content.expanded {
+            max-height: 200px;
+        }
+        .api-status {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+        }
         @media (max-width: 480px) {
             h1 {
                 font-size: 24px;
@@ -96,13 +136,61 @@
 <body>
     <div class="container">
         <h1>Check YouTube Publish Date</h1>
-        <input type="text" id="apiKeyInput" placeholder="Enter Key">
         <input type="text" id="urlInput" placeholder="Enter YouTube video URL">
         <button id="checkButton">Check Publish Date</button>
         <div id="result"></div>
+        
+        <div class="api-section">
+            <button class="api-toggle">
+                API Key Settings
+                <span class="arrow">▼</span>
+                <span class="api-status"></span>
+            </button>
+            <div class="api-content">
+                <input type="text" id="apiKeyInput" placeholder="Enter API Key">
+            </div>
+        </div>
     </div>
 
     <script>
+        // Initialize API key handling
+        const apiToggle = document.querySelector('.api-toggle');
+        const apiContent = document.querySelector('.api-content');
+        const apiStatus = document.querySelector('.api-status');
+        const apiArrow = document.querySelector('.arrow');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+
+        // Load API key from localStorage
+        let apiKey = localStorage.getItem('youtubeApiKey');
+        if (apiKey) {
+            apiKeyInput.value = apiKey;
+            apiStatus.textContent = '(API Key saved)';
+            apiContent.classList.remove('expanded');
+        } else {
+            apiContent.classList.add('expanded');
+            apiArrow.classList.add('up');
+            apiStatus.textContent = '(No API Key saved)';
+        }
+
+        // Toggle API section
+        apiToggle.addEventListener('click', () => {
+            apiContent.classList.toggle('expanded');
+            apiArrow.classList.toggle('up');
+        });
+
+        // Save API key when entered
+        apiKeyInput.addEventListener('change', () => {
+            const newKey = apiKeyInput.value.trim();
+            if (newKey) {
+                localStorage.setItem('youtubeApiKey', newKey);
+                apiStatus.textContent = '(API Key saved)';
+            } else {
+                localStorage.removeItem('youtubeApiKey');
+                apiStatus.textContent = '(No API Key saved)';
+            }
+        });
+
+        // Main functionality
         document.getElementById('checkButton').addEventListener('click', checkPublishDate);
         document.getElementById('urlInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -112,7 +200,7 @@
 
         function checkPublishDate() {
             const url = document.getElementById('urlInput').value;
-            const apiKey = document.getElementById('apiKeyInput').value;
+            const apiKey = apiKeyInput.value;
             const videoId = extractVideoId(url);
             
             if (!videoId) {
@@ -122,6 +210,8 @@
 
             if (!apiKey) {
                 showResult('Please enter a valid API Key');
+                apiContent.classList.add('expanded');
+                apiArrow.classList.add('up');
                 return;
             }
 
@@ -141,6 +231,8 @@
                 .catch(error => {
                     console.error('Error:', error);
                     showResult('An error occurred while fetching the data. Please check your API key and try again.');
+                    apiContent.classList.add('expanded');
+                    apiArrow.classList.add('up');
                 })
                 .finally(() => {
                     document.getElementById('urlInput').value = '';
