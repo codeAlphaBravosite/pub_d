@@ -7,9 +7,10 @@
     <link rel="shortcut icon" href="icon-192x192.png" type="image/png">
     <link rel="apple-touch-icon" href="icon-192x192.png">
     <title>YouTube Video Publish Date Checker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.294.0/lucide.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -17,180 +18,203 @@
             padding: 0;
         }
         body {
-            font-family: 'Roboto', Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #f0f0f0;
+            color: #1a1a1a;
+            background: linear-gradient(135deg, #f6f7f9 0%, #eef1f5 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 70vh;
             padding: 20px;
         }
         .container {
             max-width: 500px;
             width: 100%;
-            background-color: #f0f0f0;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative;
+            background-color: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
         }
         h1 {
-            color: #333333;
+            color: #1a1a1a;
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
+            margin-bottom: 32px;
+            font-size: 24px;
+            font-weight: 600;
         }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 12px;
+        .input-group {
+            position: relative;
             margin-bottom: 20px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
         }
-        input[type="text"]:focus, input[type="password"]:focus {
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            background-color: #f9fafb;
+        }
+        .input-group input:focus {
             outline: none;
-            border-color: #FF0000;
+            border-color: #ff0000;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.1);
         }
-        #checkButton, .save-api-btn {
-            display: block;
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             width: 100%;
             padding: 12px;
-            background-color: #FF0000;
-            color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-            font-size: 16px;
-            font-weight: bold;
+            transition: all 0.2s ease;
         }
-        #checkButton:hover, .save-api-btn:hover {
-            background-color: #CC0000;
+        #checkButton {
+            background-color: #ff0000;
+            color: white;
         }
-        #checkButton:active, .save-api-btn:active {
-            transform: scale(0.98);
+        #checkButton:hover {
+            background-color: #e50000;
         }
         .save-api-btn {
-            background-color: #4CAF50;
-            margin-top: 10px;
+            background-color: #22c55e;
+            color: white;
+            margin-top: 12px;
         }
         .save-api-btn:hover {
-            background-color: #45a049;
+            background-color: #16a34a;
         }
         #result {
             display: none;
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f8f8;
-            border-radius: 4px;
-            font-size: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: opacity 0.3s ease;
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #f9fafb;
+            border-radius: 12px;
+            font-size: 15px;
         }
         .api-section {
-            margin-top: 30px;
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
+            margin-top: 32px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 24px;
         }
         .api-toggle {
             background: none;
             border: none;
-            color: #666;
+            color: #4b5563;
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             width: 100%;
-            padding: 10px 0;
+            padding: 8px 0;
             font-size: 14px;
+            font-weight: 500;
         }
         .api-toggle:hover {
-            color: #FF0000;
-        }
-        .api-toggle .arrow {
-            margin-left: 8px;
-            transition: transform 0.3s ease;
-        }
-        .api-toggle .arrow.up {
-            transform: rotate(180deg);
+            color: #ff0000;
         }
         .api-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .api-content.expanded {
             max-height: 200px;
+            margin-top: 16px;
         }
         .api-status {
-            font-size: 12px;
-            color: #666;
-            margin-left: 10px;
-        }
-        .api-input-wrapper {
-            position: relative;
+            font-size: 13px;
+            color: #6b7280;
+            margin-left: 8px;
         }
         .toggle-visibility {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
             background: none;
             border: none;
             cursor: pointer;
-            padding: 5px;
-            color: #666;
+            padding: 8px;
+            color: #6b7280;
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
         }
         .toggle-visibility:hover {
-            color: #FF0000;
+            color: #ff0000;
         }
         .save-success {
-            color: #4CAF50;
+            color: #16a34a;
             font-size: 14px;
-            margin-top: 5px;
+            margin-top: 8px;
             text-align: center;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
         @media (max-width: 480px) {
-            h1 {
-                font-size: 24px;
+            .container {
+                padding: 24px;
             }
-            input[type="text"], input[type="password"], #checkButton {
-                font-size: 14px;
+            h1 {
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Check YouTube Publish Date</h1>
-        <input type="text" id="urlInput" placeholder="Enter YouTube video URL">
-        <button id="checkButton">Check Publish Date</button>
+        <h1>YouTube Publish Date Checker</h1>
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Enter YouTube video URL">
+            <i class="input-icon" data-lucide="link"></i>
+        </div>
+        <button id="checkButton">
+            <i data-lucide="search"></i>
+            Check Publish Date
+        </button>
         <div id="result"></div>
         
         <div class="api-section">
             <button class="api-toggle">
-                API Key Settings
-                <span class="arrow">▼</span>
-                <span class="api-status"></span>
+                <span>API Key Settings</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="api-status"></span>
+                    <i data-lucide="chevron-down" class="arrow"></i>
+                </div>
             </button>
             <div class="api-content">
-                <div class="api-input-wrapper">
+                <div class="input-group">
                     <input type="password" id="apiKeyInput" placeholder="Enter API Key">
-                    <button class="toggle-visibility" title="Toggle visibility">👁️</button>
+                    <button class="toggle-visibility" title="Toggle visibility">
+                        <i data-lucide="eye"></i>
+                    </button>
                 </div>
-                <button class="save-api-btn">Save API Key</button>
+                <button class="save-api-btn">
+                    <i data-lucide="save"></i>
+                    Save API Key
+                </button>
                 <div class="save-success"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize API key handling
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Initialize variables
         const apiToggle = document.querySelector('.api-toggle');
         const apiContent = document.querySelector('.api-content');
         const apiStatus = document.querySelector('.api-status');
@@ -204,25 +228,26 @@
         let apiKey = localStorage.getItem('youtubeApiKey');
         if (apiKey) {
             apiKeyInput.value = apiKey;
-            apiStatus.textContent = '(API Key saved)';
+            apiStatus.textContent = 'API Key saved';
             apiContent.classList.remove('expanded');
         } else {
             apiContent.classList.add('expanded');
             apiArrow.classList.add('up');
-            apiStatus.textContent = '(No API Key saved)';
+            apiStatus.textContent = 'No API Key';
         }
 
         // Toggle API section
         apiToggle.addEventListener('click', () => {
             apiContent.classList.toggle('expanded');
-            apiArrow.classList.toggle('up');
+            apiArrow.style.transform = apiContent.classList.contains('expanded') ? 'rotate(180deg)' : 'rotate(0)';
         });
 
         // Toggle API key visibility
         toggleVisibility.addEventListener('click', () => {
             const type = apiKeyInput.type === 'password' ? 'text' : 'password';
             apiKeyInput.type = type;
-            toggleVisibility.textContent = type === 'password' ? '👁️' : '🔒';
+            toggleVisibility.innerHTML = `<i data-lucide="${type === 'password' ? 'eye' : 'eye-off'}"></i>`;
+            lucide.createIcons();
         });
 
         // Save API key
@@ -230,17 +255,17 @@
             const newKey = apiKeyInput.value.trim();
             if (newKey) {
                 localStorage.setItem('youtubeApiKey', newKey);
-                apiStatus.textContent = '(API Key saved)';
+                apiStatus.textContent = 'API Key saved';
                 
                 // Show success message
-                saveSuccess.textContent = 'API Key saved successfully!';
+                saveSuccess.textContent = '✓ API Key saved successfully';
                 saveSuccess.style.opacity = '1';
                 setTimeout(() => {
                     saveSuccess.style.opacity = '0';
                 }, 2000);
             } else {
                 localStorage.removeItem('youtubeApiKey');
-                apiStatus.textContent = '(No API Key saved)';
+                apiStatus.textContent = 'No API Key';
             }
         });
 
@@ -265,7 +290,7 @@
             if (!apiKey) {
                 showResult('Please enter a valid API Key');
                 apiContent.classList.add('expanded');
-                apiArrow.classList.add('up');
+                apiArrow.style.transform = 'rotate(180deg)';
                 return;
             }
 
@@ -286,7 +311,7 @@
                     console.error('Error:', error);
                     showResult('An error occurred while fetching the data. Please check your API key and try again.');
                     apiContent.classList.add('expanded');
-                    apiArrow.classList.add('up');
+                    apiArrow.style.transform = 'rotate(180deg)';
                 })
                 .finally(() => {
                     document.getElementById('urlInput').value = '';
