@@ -42,7 +42,7 @@
             margin-bottom: 30px;
             font-size: 28px;
         }
-        input[type="text"] {
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
@@ -51,11 +51,11 @@
             font-size: 16px;
             transition: border-color 0.3s ease;
         }
-        input[type="text"]:focus {
+        input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
             border-color: #FF0000;
         }
-        #checkButton {
+        #checkButton, .save-api-btn {
             display: block;
             width: 100%;
             padding: 12px;
@@ -68,11 +68,18 @@
             font-size: 16px;
             font-weight: bold;
         }
-        #checkButton:hover {
+        #checkButton:hover, .save-api-btn:hover {
             background-color: #CC0000;
         }
-        #checkButton:active {
+        #checkButton:active, .save-api-btn:active {
             transform: scale(0.98);
+        }
+        .save-api-btn {
+            background-color: #4CAF50;
+            margin-top: 10px;
+        }
+        .save-api-btn:hover {
+            background-color: #45a049;
         }
         #result {
             display: none;
@@ -123,11 +130,36 @@
             color: #666;
             margin-left: 10px;
         }
+        .api-input-wrapper {
+            position: relative;
+        }
+        .toggle-visibility {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: #666;
+        }
+        .toggle-visibility:hover {
+            color: #FF0000;
+        }
+        .save-success {
+            color: #4CAF50;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
         @media (max-width: 480px) {
             h1 {
                 font-size: 24px;
             }
-            input[type="text"], #checkButton {
+            input[type="text"], input[type="password"], #checkButton {
                 font-size: 14px;
             }
         }
@@ -147,7 +179,12 @@
                 <span class="api-status"></span>
             </button>
             <div class="api-content">
-                <input type="text" id="apiKeyInput" placeholder="Enter API Key">
+                <div class="api-input-wrapper">
+                    <input type="password" id="apiKeyInput" placeholder="Enter API Key">
+                    <button class="toggle-visibility" title="Toggle visibility">👁️</button>
+                </div>
+                <button class="save-api-btn">Save API Key</button>
+                <div class="save-success"></div>
             </div>
         </div>
     </div>
@@ -159,6 +196,9 @@
         const apiStatus = document.querySelector('.api-status');
         const apiArrow = document.querySelector('.arrow');
         const apiKeyInput = document.getElementById('apiKeyInput');
+        const toggleVisibility = document.querySelector('.toggle-visibility');
+        const saveApiBtn = document.querySelector('.save-api-btn');
+        const saveSuccess = document.querySelector('.save-success');
 
         // Load API key from localStorage
         let apiKey = localStorage.getItem('youtubeApiKey');
@@ -178,12 +218,26 @@
             apiArrow.classList.toggle('up');
         });
 
-        // Save API key when entered
-        apiKeyInput.addEventListener('change', () => {
+        // Toggle API key visibility
+        toggleVisibility.addEventListener('click', () => {
+            const type = apiKeyInput.type === 'password' ? 'text' : 'password';
+            apiKeyInput.type = type;
+            toggleVisibility.textContent = type === 'password' ? '👁️' : '🔒';
+        });
+
+        // Save API key
+        saveApiBtn.addEventListener('click', () => {
             const newKey = apiKeyInput.value.trim();
             if (newKey) {
                 localStorage.setItem('youtubeApiKey', newKey);
                 apiStatus.textContent = '(API Key saved)';
+                
+                // Show success message
+                saveSuccess.textContent = 'API Key saved successfully!';
+                saveSuccess.style.opacity = '1';
+                setTimeout(() => {
+                    saveSuccess.style.opacity = '0';
+                }, 2000);
             } else {
                 localStorage.removeItem('youtubeApiKey');
                 apiStatus.textContent = '(No API Key saved)';
